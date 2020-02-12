@@ -1,4 +1,4 @@
-# CloudOS
+# Memory Manager
 
 Term project for CSCI 5573 (Operating Systems)
 
