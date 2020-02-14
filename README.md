@@ -8,4 +8,4 @@ Rhys Butler,
 Tom Lucero
 
 Goal:
-Develop a cloud based operating system
+

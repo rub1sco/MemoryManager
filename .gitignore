@@ -1,0 +1,8 @@
+*/MemoryManager.xcodeproj
+*.pbxproj
+*.xcworkspacedata
+MemoryManager/MemoryManager.xcodeproj/project.pbxproj
+MemoryManager/MemoryManager.xcodeproj/project.xcworkspace/contents.xcworkspacedata
+MemoryManager/MemoryManager.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+MemoryManager/MemoryManager.xcodeproj/project.xcworkspace/xcuserdata/tom.xcuserdatad/UserInterfaceState.xcuserstate
+MemoryManager/MemoryManager.xcodeproj/xcuserdata/tom.xcuserdatad/xcschemes/xcschememanagement.plist
