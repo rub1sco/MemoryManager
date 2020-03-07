@@ -27,6 +27,9 @@ int main(int argc, const char * argv[]) {
                 locateKnownAddress();
                 break;
                 
+            /* should we add any other options like modifying page sizes or anything???*/
+                
+            
             case 'x':
             case 'X':
                 run =  false;
