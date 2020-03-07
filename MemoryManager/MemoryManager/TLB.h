@@ -11,6 +11,8 @@
  phys memory = 65536 bytes (256 frames * 256 byte frame size)
  */
 
+/* Note: I have only made what I needed to make the stubs work... p
+robably needs a lot of modifications and cleaning up*/
 
 class TLB{
 private:
@@ -20,6 +22,8 @@ private:
     int frameNumber;
     
 public:
+    TLB();
+    ~TLB();
     
     //getters/setters
     

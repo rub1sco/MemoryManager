@@ -7,11 +7,13 @@ int main(int argc, const char * argv[]) {
     char userInput;
     bool run = true;
     
+    //runs main program
     while (run) {
         //welcome message with main menu prompt
         mainMenu();
         
         //gets user input
+        cout << "Please enter a selection: ";
         cin >> userInput;
         
         switch (userInput) {
@@ -35,6 +37,6 @@ int main(int argc, const char * argv[]) {
                 break;
         }
     }
- 
+
     return 0;
 }
