@@ -9,7 +9,7 @@ TLB::~TLB(){
     
 }
 
-bool TLB::bIsInBuffer(int pageNumber, int frameNumber){
+bool TLB::bIsInBuffer(int pageNumber){
     
     return false;
 }

@@ -20,6 +20,8 @@ private:
     //values on table
     int pageNumber;
     int frameNumber;
+    int table [16];
+    
     
 public:
     TLB();
@@ -28,7 +30,7 @@ public:
     //getters/setters
     
     //methods needed
-    bool bIsInBuffer(int pageNumber, int frameNumber);
+    bool bIsInBuffer(int pageNumber);
     
 };
 

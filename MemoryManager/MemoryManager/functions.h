@@ -9,6 +9,8 @@
 #include <sstream>
 
 
+#define MAX_LOGICAL_ADDR 65535
+
 using namespace std;
 
 //definitons of helper functions

@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "functions.h"
 
-#define MAX_LOGICAL_ADDR 65536
 
 //generates welcome message
 void mainMenu(){
@@ -30,7 +29,7 @@ std::tuple<int,int> parser(int logicalAddress, int NumPages){
     int offset = 0;
     
     //error handling if out of bounds value entered
-    if(logicalAddress < 0 || logicalAddress > 65535){
+    if(logicalAddress < 0 || logicalAddress > MAX_LOGICAL_ADDR){
         cout << "not a valid value. Please enter within logical addressrange (0,65535)" << endl << endl;
         return std::make_tuple<int,int>(-1,-1);
     }
@@ -60,15 +59,25 @@ void replacePage(int pageNumber, int offset){
 //TODO make functional... bulk of alg should be here
 void decisionMaker(int pageNumber, int offset, TLB TLB, pageTable pageTable){
     //try and match in TLB
-    if(TLB.bIsInBuffer(pageNumber, offset) == true){
+    if(TLB.bIsInBuffer(pageNumber) == true){
         /* do stuff with data here*/
+        
+        //returns frame number
+        
+        //use frame and offset to find in physical memory
     }
     //if not in TLB, check page table
     else if (pageTable.bisInTable(pageNumber)== true){
        /* do stuff with data here*/
+        
+        //returns frame number
+        
+        //use frame and offset to find in physical memory
     }
     //else, page fault
     else{
+        
+        //TODO per Nancy's request
         replacePage(pageNumber, offset);
     }
     
@@ -115,7 +124,7 @@ void locateKnownAddress(){
     cout << "Please enter a logical address: ";
     cin >> logicalAddress;
     
-    if(logicalAddress > 65535 || logicalAddress < 0){
+    if(logicalAddress > MAX_LOGICAL_ADDR || logicalAddress < 0){
         cout << "invalid number. Out of bounds." << endl << endl;
         //flushes cin buffer if number is too large
         cin.clear();
