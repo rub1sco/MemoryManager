@@ -1,5 +1,8 @@
 #include <stdio.h>
+#include <bitset>
+#include "TLB.cpp"
 #include "functions.h"
+#include "pageTable.cpp"
 
 
 //generates welcome message
