@@ -13,7 +13,7 @@ int main(int argc, const char * argv[]) {
     TLB myTLB;
 
     //Add value to the buffer in the TLB
-    myTLB.addValue(18);
+    myTLB.addValue(18, 200);
 
     //Check to see if the value was added
     bool check = myTLB.bIsInBuffer(18);
@@ -28,7 +28,7 @@ int main(int argc, const char * argv[]) {
     newMap = myTLB.getLookBuffer();
 
     //Add a value to the buffer copy
-    newMap.insert({20,20});
+    newMap.insert({20,201});
 
     //Put the copy of the buffer back into myTLB to check setter
     myTLB.setUnorderedMap(newMap);
