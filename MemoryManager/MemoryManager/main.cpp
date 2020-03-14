@@ -36,6 +36,12 @@ int main(int argc, const char * argv[]) {
     //Check that correct map is in myTLB
     check = myTLB.bIsInBuffer(20);
 
+    //Check that we can remove a value.
+    myTLB.removeValue(20);
+
+    //Check that value was erased.
+    check = myTLB.bIsInBuffer(20);
+
     //***********************************END TEST CODE********************************************//
     
     //runs main program

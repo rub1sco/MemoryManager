@@ -4,7 +4,7 @@
 TLB::TLB(){
 
     //Reserve the required number of spaces for our TLB.
-    lookBuffer.reserve(128);
+    lookBuffer.reserve(16);
 
     //Possibly load entries into the buffer
 
@@ -54,8 +54,14 @@ bool TLB::bIsInBuffer(int pageNumber){
 
 }//end bool TLB::bIsInBuffer()
 
-void TLB::addValue(int newValue){
+void TLB::addValue(int pageValue, int frameNumber){
 
-    lookBuffer.insert({newValue, newValue});
+    lookBuffer.insert({pageValue, frameNumber});
 
 }//end addValueToMap
+
+void TLB::removeValue(int valToRemove) {
+
+    lookBuffer.erase(valToRemove);
+
+}//end removeValue
