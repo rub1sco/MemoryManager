@@ -42,19 +42,15 @@ bool TLB::bIsInBuffer(int pageNumber){
     //Look for page number in buffer
     mapIt = lookBuffer.find(pageNumber);
 
-    //Check if iterator returned end.
-    //If the iterator returned end the item was not in the buffer.
-    if(mapIt == lookBuffer.end()){
-
-        return false;
-    }//end if
 
     //If the iterator is not at the end, the buffer has returned a number.
-    else if(mapIt != lookBuffer.end()){
+    if(mapIt != lookBuffer.end()){
 
         return true;
 
     }//end else if
+
+    return false;
 
 }//end bool TLB::bIsInBuffer()
 
