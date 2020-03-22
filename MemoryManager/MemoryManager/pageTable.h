@@ -1,7 +1,8 @@
 #ifndef pageTable_h
 #define pageTable_h
+#include <unordered_map>
 
-
+using namespace std;
 
 /*
  specs from p-56
@@ -15,9 +16,10 @@
 
 class pageTable{
 private:
-    int page;
-    int pageSize;
-    int NumPages;
+    int page;       //will we need these?
+    int pageSize;   //will we need these?
+    int NumPages;   //allows for adjustable table size (if user wants smaller page table)
+    unordered_map<int, int> table;
     
 public:
     pageTable();
@@ -25,10 +27,14 @@ public:
     
     //getters/setters
     int getNumPages();
-    
+    void setNumPages(int val);
+    void setPageTable(unordered_map<int, int> newTable);
     
     //methods
     bool bisInTable(int page);
+    void addToTable(int page, int frame);
+    void removeFromTable(int page);
+    
     
 };
 

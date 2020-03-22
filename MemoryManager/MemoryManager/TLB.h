@@ -28,7 +28,6 @@ private:
     //values on table
     int pageNumber;
     int frameNumber;
-    int table [16];
     
     
 public:

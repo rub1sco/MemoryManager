@@ -5,7 +5,7 @@ TLB::TLB(){
 
     //Reserve the required number of spaces for our TLB.
     lookBuffer.reserve(16);
-
+    
     //Possibly load entries into the buffer
 
 }//end default constructor
@@ -50,6 +50,7 @@ bool TLB::bIsInBuffer(int pageNumber){
 
     }//end else if
 
+    //did not find in TLB
     return false;
 
 }//end bool TLB::bIsInBuffer()
