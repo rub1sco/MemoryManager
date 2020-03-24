@@ -29,6 +29,7 @@ public:
     int getNumPages();
     void setNumPages(int val);
     void setPageTable(unordered_map<int, int> newTable);
+    unordered_map<int, int> getTable();
     
     //methods
     bool bisInTable(int page);

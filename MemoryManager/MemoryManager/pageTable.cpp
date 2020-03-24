@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include "pageTable.h"
+#include <iostream>
+using namespace std;
 
 
 //constructor... sets variables and initialzies table
@@ -35,6 +37,11 @@ int pageTable::getNumPages(){
     return NumPages;
 }
 
+unordered_map <int, int> pageTable:: getTable(){
+    
+    return table;
+    
+}
 
 //checks if page is in table
 bool pageTable::bisInTable(int page){
