@@ -57,7 +57,7 @@ std::tuple<int,int> parser(int logicalAddress, int NumPages){
 
 TLB replacePage (vector<victimPage> & TLBVec, int pageNumber, pageTable pageTable,  TLB TLB)
 {
-    bool notInPagetable = false;
+    bool notInPagetable = false;                                //TODO ASK is the logic supposed to == true, is in page table?
     int replacementPg = -1;
     int replacementFr = -1;
     unordered_map<int, int> TLB_ = TLB.getLookBuffer();
@@ -65,11 +65,11 @@ TLB replacePage (vector<victimPage> & TLBVec, int pageNumber, pageTable pageTabl
     int frame = -1;
     
     // page fault case one: TLB is not full
-    // assuming TLB size is 10
+    // assuming TLB size is 10                                //TODO ASK size 16?
     // just look for pg in pg table or in disk and update TLB
     // missing parts - searching disk and updating page table
     
-    if (TLB_.size() < 16)
+    if (TLB_.size() < 16)                                    //TODO ASK isn't TLB reserved at a size of 16?
     {
         // look for page number in pageTable
         for (auto i : pageTable_)
@@ -93,15 +93,15 @@ TLB replacePage (vector<victimPage> & TLBVec, int pageNumber, pageTable pageTabl
     // page fault case two: TLB is full, pick a victim page
     if (TLB_.size() == 16)
     {
-        cout << "TLBVec before sorting" << endl;
-        for (int i = 0; i <TLBVec.size(); i++)
-        {
-            cout << TLBVec[i].getTally();
-        }
-        cout  << endl;
+//        cout << "TLBVec before sorting" << endl;
+//        for (int i = 0; i <TLBVec.size(); i++)
+//        {
+//            cout << TLBVec[i].getTally();
+//        }
+//        cout  << endl;
         // sort vec on tally thus slot [0] will contain victim pg
         sort(TLBVec.begin(), TLBVec.end());
-        cout << "TLBVec after sorting" << endl;
+//        cout << "TLBVec after sorting" << endl;
         //        for (int i = 0; i <TLBVec.size(); i++)
         //        {
         //            cout << TLBVec[i].getTally();
@@ -208,16 +208,16 @@ void decisionMaker(int pageNumber, int offset, TLB TLB, pageTable pageTable, vec
         updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
         
     }
-    if(TLB.bIsInBuffer(pageNumber) == false)
-    {
-        
-        int firstOccurrence = true;
-        TLBVec = updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
-        TLB = replacePage(TLBVec, pageNumber, pageTable, TLB);
-        TLBVec = updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
-        
-        
-    }
+//    if(TLB.bIsInBuffer(pageNumber) == false)
+//    {
+//
+//        int firstOccurrence = true;
+//        TLBVec = updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
+//        TLB = replacePage(TLBVec, pageNumber, pageTable, TLB);
+//        TLBVec = updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
+//
+//
+//    }
     //if not in TLB, check page table
     // size of physical memory is the same as the size of the virtual address space so no need to replace pg in pg table
     else if (pageTable.bisInTable(pageNumber)== true){
@@ -228,18 +228,20 @@ void decisionMaker(int pageNumber, int offset, TLB TLB, pageTable pageTable, vec
         //use frame and offset to find in physical memory
     }
     //else, page fault
-    else if (pageTable.bisInTable(pageNumber)== false)
+    else if (pageTable.bisInTable(pageNumber)== false && TLB.bIsInBuffer(pageNumber) == false)                 
     {
         int firstOccurrence = true;
         TLBVec = updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
         TLB = replacePage(TLBVec, pageNumber, pageTable, TLB);
         TLBVec = updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
+        
+        pageTable.getTable();
     }
     
 }
 
 //function that locates a random address and determines if in TLB, page number, offset
-void locateRandomAddress(){
+void locateRandomAddress(unordered_map<int, string>  &backingStore){
     int logicalAddress = 0;
     std::tuple<int,int> physTranslation;
     TLB TLB;
@@ -270,7 +272,7 @@ void locateRandomAddress(){
 
 //looks up known user input
 //Note: I thought of this just to add a little more functionality to our virtual memory manager. should be straightforward application of random
-void locateKnownAddress(){
+void locateKnownAddress(unordered_map<int, string>  &backingStore){
     //initialize variables
     int logicalAddress = 0;
     std::tuple<int,int> physTranslation;
@@ -304,4 +306,33 @@ void locateKnownAddress(){
     
 }
 
+
+//generates backing store with keys 0-255, each with a unique "app name"
+void buildBackingStore(unordered_map<int, string> &backingStore){
+    ifstream file("words.txt");
+    string line;
+    vector<string> words;
+    while(getline(file, line)){
+        words.push_back(line);
+    }
+
+    
+    //frames build from 0-255, therefore key must be 0-255 with no duplicate
+    for (int i = 0; i < 256; i++) {
+        //gets randVal within words.txt
+        int randVal = rand() % words.size();
+        
+        //stores randomword
+        string randomWord = words[randVal];
+        
+        //removes from vector to ensure each app is unique
+        words[randVal].erase();
+        
+        //appends .exe to show app executable
+        randomWord.append(".exe");
+        
+        //add to backing store {frame, app}
+        backingStore.insert({i, randomWord});
+    }
+}
 
