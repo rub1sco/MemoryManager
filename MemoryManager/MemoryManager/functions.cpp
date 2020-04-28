@@ -209,47 +209,46 @@ void decisionMaker(tuple<int,int> physTranslation, TLB TLB, pageTable pageTable,
     int pageNumber = get<0>(physTranslation);
     int offset = get<1>(physTranslation);
     
-    //try and match in TLB
-    if(TLB.bIsInBuffer(pageNumber) == true){
-        //prints TLB data
-        TLB.printData(pageNumber);
+   if(TLB.bIsInBuffer(pageNumber) == true){
+            /* do stuff with data here*/
+            
+            //returns frame number
+            
+            //use frame and offset to find in physical memory
+            int firstOccurrence = false;
+            updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
+            
+        }
+        if(TLB.bIsInBuffer(pageNumber) == false)
+        {
+            
+            int firstOccurrence = true;
+            TLBVec = updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
+            TLB = replacePage(TLBVec, pageNumber, pageTable, TLB, backingStore);
+            TLBVec = updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
+            
+            
+        }
+        //if not in TLB, check page table
+        // size of physical memory is the same as the size of the virtual address space so no need to replace pg in pg table
+        else if (pageTable.bisInTable(pageNumber)== true){
+            /* do stuff with data here*/
+            
+            //returns frame number
+            
+            //use frame and offset to find in physical memory
+        }
+        //else, page fault
+        else if (pageTable.bisInTable(pageNumber)== false)
+        {
+            int firstOccurrence = true;
+            TLBVec = updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
+            TLB = replacePage(TLBVec, pageNumber, pageTable, TLB,backingStore);
+            TLBVec = updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
+        }
         
-        //returns frame number from backingstore...... ************ TODO, never actually uses the offset??? shit.**********
-//        auto foundVal = backingStore.find(pageNumber);
-        
-        printf("Data from backingStore");
-//        printf("frame number: %d, application stored: %s", foundVal -> first, foundVal -> second.c_str());
-
-        
-    }
-    //if not in TLB, check page table
-    // size of physical memory is the same as the size of the virtual address space so no need to replace pg in pg table
-    else if (pageTable.bisInTable(pageNumber)== true){
-        //prints pageTable data
-        pageTable.printData(pageNumber);
-        
-        //returns frame number from backingstore...... ************ TODO, never actually uses the offset??? shit.**********
-//        auto foundVal = backingStore.find(pageNumber);
-        
-        printf("Data from backingStore");
-//        printf("frame number: %d, application stored: %s", foundVal -> first, foundVal -> second.c_str());
-    }
-    //else, page fault
-    else if (pageTable.bisInTable(pageNumber)== false && TLB.bIsInBuffer(pageNumber) == false)                 
-    {
-        int firstOccurrence = true;
-        TLBVec = updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
-        TLB = replacePage(TLBVec, pageNumber, pageTable, TLB, backingStore);
-        TLBVec = updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
-
-        pageTable.getTable();
-        
-        
-        //must replace page
-        //replacePageV2(TLBVec, pageNumber, pageTable, TLB, backingStore);
-    }
-    
 }
+    
 
 //function that locates a random address and determines if in TLB, page number, offset
 void locateRandomAddress(Application backingStore[]){
