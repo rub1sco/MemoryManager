@@ -43,11 +43,13 @@ std::tuple<int,int> parser(int logicalAddress, int NumPages){
     
     //converts logical address to 16bit binary string
     string binary = std::bitset<16>(logicalAddress).to_string();
+    cout << binary << endl;
     
     //split into two 8 binary strings
-    string strPgNum = binary.substr(8,16);
-    string strOffset = binary.substr(0,8);
-    
+    string strPgNum = binary.substr(0,8);
+    string strOffset = binary.substr(8,16);
+    cout << strPgNum << endl;
+    cout << strOffset << endl;
     //convert binary to int
     pageNumber = stoi(strPgNum,nullptr,2);
     offset = stoi(strOffset,nullptr,2);
