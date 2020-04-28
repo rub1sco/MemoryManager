@@ -1,11 +1,4 @@
-#include <stdio.h>
-#include <bitset>
-#include "TLB.cpp"
 #include "functions.h"
-#include "pageTable.cpp"
-#include <vector>
-#include "victimPage.h"
-#include <algorithm>
 
 
 
@@ -222,6 +215,11 @@ void decisionMaker(tuple<int,int> physTranslation, TLB TLB, pageTable pageTable,
         }
         if(TLB.bIsInBuffer(pageNumber) == false)
         {
+            int startLoc = pageNumber + offset;
+            cout << startLoc << endl;
+             cout << (unsigned char) startLoc << endl;
+            
+            
             
             int firstOccurrence = true;
             TLBVec = updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
@@ -370,22 +368,12 @@ void buildBackingStore(Application backingStore[]){
     //convert bin text file to char array
     ifstream f("backingStore.bin",ios::in | ios::binary);
     char test[sizeof(f)];
-    
+
     //gets length of file, saves info to end_pos
     f.seekg(0, ios_base::end);
     ios_base::streampos end_pos = f.tellg();
-    
-    
-    //write to char array... TODO can we just work directly with bin using seekg()? char array has issues right now.
-    for(int i = 0; i < end_pos; i++){
-        f >> test[i];
-    }
-    
-    //testing
-    for(int i = 0; i < sizeof(Application); i++){
-        cout << test[i];
-    }
-    cout << endl;
+
+
 };
 
 

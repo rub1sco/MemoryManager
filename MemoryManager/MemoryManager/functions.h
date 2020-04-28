@@ -1,20 +1,22 @@
 #ifndef functions_h
 #define functions_h
 #include <tuple>
-#include "pageTable.h"
-#include "TLB.h"
-#include <time.h>
+#include <ctime>
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <vector>
-#include "victimPage.h"
 #include <algorithm>
 #include <random>
 #include <fstream>
 
+#include "victimPage.h"
+#include "TLB.h"
+#include "pageTable.h"
+
 
 #define MAX_LOGICAL_ADDR 65535
+//typedef unsigned char Byte;
 
 using namespace std;
 

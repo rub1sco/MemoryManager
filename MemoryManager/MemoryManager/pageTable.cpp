@@ -1,6 +1,5 @@
-#include <stdio.h>
+
 #include "pageTable.h"
-#include <iostream>
 using namespace std;
 
 

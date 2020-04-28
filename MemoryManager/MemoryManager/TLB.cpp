@@ -30,7 +30,7 @@ unordered_map <int, int> TLB:: getLookBuffer(){
 
 }//end getLookBuffer
 
-void TLB:: setUnorderedMap(unordered_map <int, int> newMap){
+void TLB::setUnorderedMap(unordered_map <int, int> newMap){
 
     lookBuffer = newMap;
 

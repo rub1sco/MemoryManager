@@ -1,6 +1,9 @@
 #ifndef pageTable_h
 #define pageTable_h
+
 #include <unordered_map>
+#include <iostream>
+#include <stdio.h>
 
 using namespace std;
 
