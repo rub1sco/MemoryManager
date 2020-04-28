@@ -26,8 +26,8 @@ private:
     //The actual buffer that will store some of the page numbers from our page table
     unordered_map <int, int> lookBuffer;
     //values on table
-    int pageNumber;
-    int frameNumber;
+//    int pageNumber;
+//    int frameNumber;
     
     
 public:
@@ -59,6 +59,8 @@ public:
 
     //Removes a value from the map by key.
     void removeValue(int valToRemove);
+    
+    void printData(int pageNumber);
 
 };
 

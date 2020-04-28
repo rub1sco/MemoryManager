@@ -35,6 +35,7 @@ public:
     bool bisInTable(int page);
     void addToTable(int page, int frame);
     void removeFromTable(int page);
+    void printData(int pageNumber);
     
     
 };

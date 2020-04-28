@@ -5,6 +5,8 @@ TLB::TLB(){
 
     //Reserve the required number of spaces for our TLB.
     lookBuffer.reserve(16);
+//    pageNumber = 0;
+//    frameNumber = 0;
     
     //Possibly load entries into the buffer
 
@@ -66,3 +68,9 @@ void TLB::removeValue(int valToRemove) {
     lookBuffer.erase(valToRemove);
 
 }//end removeValue
+
+
+//print data from look buffer
+void TLB::printData(int pageNumber){
+    
+}

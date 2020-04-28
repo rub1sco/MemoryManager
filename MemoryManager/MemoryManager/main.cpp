@@ -7,17 +7,23 @@
 int main(int argc, const char * argv[]) {
     char userInput;
     bool run = true;
-
-    //declare unordered map for backing store
-    unordered_map<int, string> backingStore;
+    Application backingStore[256];
     
     //populate backingStore with data
     buildBackingStore(backingStore);
-  
-    //TODO figure out why this prints out backwards???? not really important but WHY?!
-//    for (auto it = backingStore.begin(); it != backingStore.end(); it++) {
-//        printf("frame: %d, appID: %s \n",(*it).first, (*it).second.c_str());
+    
+    //test print
+//    ifstream rf("backingStore.bin", ios::out | ios::binary);
+//    for(int i = 0; i < 256; i++){
+//        rf.read((char *) &backingStore[i], sizeof(Application));
 //    }
+//    rf.close();
+//    for(int i = 0; i < 256; i++){
+//
+//        cout << backingStore[i].frame << " " << backingStore[i].appName << endl;
+//    }
+    
+    
     
     //runs main program
     while (run) {

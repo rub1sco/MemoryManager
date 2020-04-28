@@ -8,6 +8,7 @@
 #include <algorithm>
 
 
+
 //generates welcome message
 void mainMenu(){
     cout << "Welcome to our virtual memory manager. What would you like to do?" << endl;
@@ -55,9 +56,10 @@ std::tuple<int,int> parser(int logicalAddress, int NumPages){
 }
 
 
-TLB replacePage (vector<victimPage> & TLBVec, int pageNumber, pageTable pageTable,  TLB TLB)
+TLB replacePage (vector<victimPage> & TLBVec, int pageNumber, pageTable pageTable,  TLB TLB, Application backingStore[])
 {
-    bool notInPagetable = false;                                //TODO ASK is the logic supposed to == true, is in page table?
+//    bool notInPagetable = false;                                //TODO ASK is the logic supposed to == true, is in page table?
+    bool bIsInPageTable = false;
     int replacementPg = -1;
     int replacementFr = -1;
     unordered_map<int, int> TLB_ = TLB.getLookBuffer();
@@ -76,13 +78,16 @@ TLB replacePage (vector<victimPage> & TLBVec, int pageNumber, pageTable pageTabl
         {
             if (i.first == pageNumber)
             {
+                
+//                cout << backingStore[i.first] << endl;
                 TLB.addValue(pageNumber, i.second);
                 return TLB;
             }
-            else
-                notInPagetable = true;
+            else{
+                bIsInPageTable = true;
+            }
         }
-        if (notInPagetable == true)
+        if (bIsInPageTable == true)
         {
             frame = randomNumberGenerator();
             pageTable.addToTable(pageNumber, frame);
@@ -93,20 +98,9 @@ TLB replacePage (vector<victimPage> & TLBVec, int pageNumber, pageTable pageTabl
     // page fault case two: TLB is full, pick a victim page
     if (TLB_.size() == 16)
     {
-//        cout << "TLBVec before sorting" << endl;
-//        for (int i = 0; i <TLBVec.size(); i++)
-//        {
-//            cout << TLBVec[i].getTally();
-//        }
-//        cout  << endl;
         // sort vec on tally thus slot [0] will contain victim pg
         sort(TLBVec.begin(), TLBVec.end());
-//        cout << "TLBVec after sorting" << endl;
-        //        for (int i = 0; i <TLBVec.size(); i++)
-        //        {
-        //            cout << TLBVec[i].getTally();
-        //        }
-        //        cout  << endl;
+
         
         //find pg requested in pg table / disk
         for (auto i : pageTable_)
@@ -116,15 +110,16 @@ TLB replacePage (vector<victimPage> & TLBVec, int pageNumber, pageTable pageTabl
                 replacementPg = i.first;
                 replacementFr = i.second;
             }
-            else
-                notInPagetable = true;
+            else{
+                bIsInPageTable = true;
+            }
         }
-        if (notInPagetable == true)
+        if (bIsInPageTable == true)
         {
             frame = randomNumberGenerator();
             // page table now has the needed page so now in a recursion call will find the pg in the page table and pick a victim page from the TLB
             pageTable.addToTable(pageNumber, frame);
-            replacePage (TLBVec, pageNumber, pageTable, TLB);
+            replacePage (TLBVec, pageNumber, pageTable, TLB, backingStore);
             
         }
         
@@ -157,7 +152,7 @@ vector<victimPage> updateTally(TLB TLB, int cpu_pg, vector<victimPage> & TLBVec,
     // populates vector with contents of TLB
     if (TLB_.empty() == false)
     {
-        for (auto i : TLB_)
+        for (auto i : TLB_)        
         {
             entry.setTally(1);
             entry.setPageNum(i.first);
@@ -194,54 +189,70 @@ vector<victimPage> updateTally(TLB TLB, int cpu_pg, vector<victimPage> & TLBVec,
 }
 
 
+//version 2 of replace page if pagefault
+void replacePageV2(vector<victimPage> & TLBVec, int pageNumber, pageTable pageTable,  TLB TLB, Application backingStore[]){
+    //if TLB is empty
+    
+    //if pageTable is empty
+    
+    //if TLB is full
+    
+    //if pageTable full
+    
+    
+}
+
+
 //decides if it is matched in TLB, page table or if page faulted.
 //TODO make functional... bulk of alg should be here
-void decisionMaker(int pageNumber, int offset, TLB TLB, pageTable pageTable, vector<victimPage> & TLBVec){
+void decisionMaker(tuple<int,int> physTranslation, TLB TLB, pageTable pageTable, vector<victimPage> & TLBVec, Application backingStore[]){
+    int pageNumber = get<0>(physTranslation);
+    int offset = get<1>(physTranslation);
+    
     //try and match in TLB
     if(TLB.bIsInBuffer(pageNumber) == true){
-        /* do stuff with data here*/
+        //prints TLB data
+        TLB.printData(pageNumber);
         
-        //returns frame number
+        //returns frame number from backingstore...... ************ TODO, never actually uses the offset??? shit.**********
+//        auto foundVal = backingStore.find(pageNumber);
         
-        //use frame and offset to find in physical memory
-        int firstOccurrence = false;
-        updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
+        printf("Data from backingStore");
+//        printf("frame number: %d, application stored: %s", foundVal -> first, foundVal -> second.c_str());
+
         
     }
-//    if(TLB.bIsInBuffer(pageNumber) == false)
-//    {
-//
-//        int firstOccurrence = true;
-//        TLBVec = updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
-//        TLB = replacePage(TLBVec, pageNumber, pageTable, TLB);
-//        TLBVec = updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
-//
-//
-//    }
     //if not in TLB, check page table
     // size of physical memory is the same as the size of the virtual address space so no need to replace pg in pg table
     else if (pageTable.bisInTable(pageNumber)== true){
-        /* do stuff with data here*/
+        //prints pageTable data
+        pageTable.printData(pageNumber);
         
-        //returns frame number
+        //returns frame number from backingstore...... ************ TODO, never actually uses the offset??? shit.**********
+//        auto foundVal = backingStore.find(pageNumber);
         
-        //use frame and offset to find in physical memory
+        printf("Data from backingStore");
+//        printf("frame number: %d, application stored: %s", foundVal -> first, foundVal -> second.c_str());
     }
     //else, page fault
     else if (pageTable.bisInTable(pageNumber)== false && TLB.bIsInBuffer(pageNumber) == false)                 
     {
         int firstOccurrence = true;
         TLBVec = updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
-        TLB = replacePage(TLBVec, pageNumber, pageTable, TLB);
+        TLB = replacePage(TLBVec, pageNumber, pageTable, TLB, backingStore);
         TLBVec = updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
-        
+
         pageTable.getTable();
+        
+        
+        //must replace page
+        //replacePageV2(TLBVec, pageNumber, pageTable, TLB, backingStore);
     }
     
 }
 
 //function that locates a random address and determines if in TLB, page number, offset
-void locateRandomAddress(unordered_map<int, string>  &backingStore){
+void locateRandomAddress(Application backingStore[]){
     int logicalAddress = 0;
     std::tuple<int,int> physTranslation;
     TLB TLB;
@@ -266,13 +277,13 @@ void locateRandomAddress(unordered_map<int, string>  &backingStore){
     cout << "Offset: " << get<1>(physTranslation) << endl << endl;
     
     //determines if in TLB, page table or if page fault.. bulk of alg should be here
-    decisionMaker(get<0>(physTranslation), get<1>(physTranslation), TLB, pageTable, TLBVec);
+    decisionMaker(physTranslation, TLB, pageTable, TLBVec, backingStore);
 }
 
 
 //looks up known user input
 //Note: I thought of this just to add a little more functionality to our virtual memory manager. should be straightforward application of random
-void locateKnownAddress(unordered_map<int, string>  &backingStore){
+void locateKnownAddress(Application backingStore[]){
     //initialize variables
     int logicalAddress = 0;
     std::tuple<int,int> physTranslation;
@@ -302,16 +313,17 @@ void locateKnownAddress(unordered_map<int, string>  &backingStore){
     cout << "Offset: " << get<1>(physTranslation) << endl << endl;
     
     //determines if in TLB, page table or if page fault... bulk of alg should be here
-    decisionMaker(get<0>(physTranslation), get<1>(physTranslation), TLB, pageTable, TLBVec);
+    decisionMaker(physTranslation, TLB, pageTable, TLBVec, backingStore);
     
 }
 
 
 //generates backing store with keys 0-255, each with a unique "app name"
-void buildBackingStore(unordered_map<int, string> &backingStore){
+void buildBackingStore(Application backingStore[]){
     ifstream file("words.txt");
     string line;
     vector<string> words;
+    
     while(getline(file, line)){
         words.push_back(line);
     }
@@ -330,9 +342,29 @@ void buildBackingStore(unordered_map<int, string> &backingStore){
         
         //appends .exe to show app executable
         randomWord.append(".exe");
+    
+        //create application object
+        Application frame = Application();
         
-        //add to backing store {frame, app}
-        backingStore.insert({i, randomWord});
+        frame.frame = i;
+        frame.appName = randomWord;
+        
+        //add to vector
+        backingStore[i]= frame;
+        
     }
+    
+    //write map to binary file
+    ofstream BckStrfile("backingStore.bin",ios::out | ios::binary);
+    if(!BckStrfile){
+        printf("cannot open file.\n");
+        return;
+    }
+    
+    for(int i = 0; i < 256; i++){
+        BckStrfile.write((char *) &backingStore[i], sizeof(Application));
+    }
+    BckStrfile.close();
+    
+    
 }
-

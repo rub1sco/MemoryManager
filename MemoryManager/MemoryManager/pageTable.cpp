@@ -72,3 +72,8 @@ void pageTable::addToTable(int page, int frame){
 void pageTable::removeFromTable(int page){
     table.erase(page);
 }
+
+void pageTable::printData(int pageNumber){
+    //print data associated with key
+    
+}
