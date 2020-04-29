@@ -75,17 +75,18 @@ TLB replacePage (vector<victimPage> & TLBVec, int pageNumber, pageTable pageTabl
                 
 //                cout << backingStore[i.first] << endl;
                 TLB.addValue(pageNumber, i.second);
+                bIsInPageTable = true;
                 return TLB;
             }
             else{
-                bIsInPageTable = true;
+                bIsInPageTable = false;
             }
         }
         if (bIsInPageTable == true)
         {
             frame = randomNumberGenerator();
-            pageTable.addToTable(pageNumber, frame);
-            TLB.addValue(pageNumber, frame);
+            pageTable.addToTable(pageNumber, pageNumber);
+            TLB.addValue(pageNumber, pageNumber);
         }
     }
     
@@ -257,6 +258,7 @@ void locateRandomAddress(Application backingStore[]){
     pageTable pageTable;
     vector<victimPage> TLBVec;
     
+    //TODO generate > 16 logical addresses to fill up TLB.. maybe 255 to fill up page table totally
     //generate random address with randomNumberGenerator()
     logicalAddress = randomNumberGenerator();
     
