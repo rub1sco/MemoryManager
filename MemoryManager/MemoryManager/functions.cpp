@@ -84,7 +84,8 @@ TLB replacePage (vector<victimPage> & TLBVec, int pageNumber, pageTable pageTabl
         }
         if (bIsInPageTable == true)
         {
-            frame = randomNumberGenerator();
+            
+            
             pageTable.addToTable(pageNumber, pageNumber);
             TLB.addValue(pageNumber, pageNumber);
         }
