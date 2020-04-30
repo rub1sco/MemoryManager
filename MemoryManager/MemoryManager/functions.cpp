@@ -52,20 +52,20 @@ std::tuple<int,int> parser(int logicalAddress, int NumPages){
 
 TLB replacePage (vector<victimPage> & TLBVec, int pageNumber, pageTable pageTable,  TLB TLB, Application backingStore[])
 {
-//    bool notInPagetable = false;                                //TODO ASK is the logic supposed to == true, is in page table?
+
     bool bIsInPageTable = false;
     int replacementPg = -1;
     int replacementFr = -1;
     unordered_map<int, int> TLB_ = TLB.getLookBuffer();
     unordered_map<int, int> pageTable_ = pageTable.getTable();
-    int frame = -1;
+    int invalidBit = 0;
     
     // page fault case one: TLB is not full
-    // assuming TLB size is 10                                //TODO ASK size 16?
+    // TLB size is 16
     // just look for pg in pg table or in disk and update TLB
     // missing parts - searching disk and updating page table
     
-    if (TLB_.size() < 16)                                    //TODO ASK isn't TLB reserved at a size of 16?
+    if (TLB_.size() < 16)
     {
         // look for page number in pageTable
         for (auto i : pageTable_)
@@ -73,7 +73,6 @@ TLB replacePage (vector<victimPage> & TLBVec, int pageNumber, pageTable pageTabl
             if (i.first == pageNumber)
             {
                 
-//                cout << backingStore[i.first] << endl;
                 TLB.addValue(pageNumber, i.second);
                 bIsInPageTable = true;
                 return TLB;
@@ -82,11 +81,11 @@ TLB replacePage (vector<victimPage> & TLBVec, int pageNumber, pageTable pageTabl
                 bIsInPageTable = false;
             }
         }
-        if (bIsInPageTable == true)
+        if (bIsInPageTable == false)
         {
-            
-            
-            pageTable.addToTable(pageNumber, pageNumber);
+            // by adding page to pageTable the valid - invalid but is set to 1
+            invalidBit = 1;
+            pageTable.addToTable(pageNumber, invalidBit);
             TLB.addValue(pageNumber, pageNumber);
         }
     }
@@ -104,17 +103,18 @@ TLB replacePage (vector<victimPage> & TLBVec, int pageNumber, pageTable pageTabl
             if (i.first == pageNumber)
             {
                 replacementPg = i.first;
-                replacementFr = i.second;
-            }
-            else{
+                replacementFr = i.first;
                 bIsInPageTable = true;
             }
+            else{
+                bIsInPageTable = false;
+            }
         }
-        if (bIsInPageTable == true)
+        if (bIsInPageTable == false)
         {
-            frame = randomNumberGenerator();
+            invalidBit = 1;
             // page table now has the needed page so now in a recursion call will find the pg in the page table and pick a victim page from the TLB
-            pageTable.addToTable(pageNumber, frame);
+            pageTable.addToTable(pageNumber, invalidBit);
             replacePage (TLBVec, pageNumber, pageTable, TLB, backingStore);
             
         }
@@ -215,7 +215,7 @@ void decisionMaker(tuple<int,int> physTranslation, TLB TLB, pageTable pageTable,
             updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
             
         }
-        if(TLB.bIsInBuffer(pageNumber) == false)
+    if(TLB.bIsInBuffer(pageNumber) == false)
         {
             int startLoc = pageNumber + offset;
             cout << startLoc << endl;
@@ -225,7 +225,9 @@ void decisionMaker(tuple<int,int> physTranslation, TLB TLB, pageTable pageTable,
             
             int firstOccurrence = true;
             TLBVec = updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
+            //TLB content has changed
             TLB = replacePage(TLBVec, pageNumber, pageTable, TLB, backingStore);
+            // update TLBVec, TLBVec is needed to determine which pg was LRU
             TLBVec = updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
             
             
@@ -244,7 +246,9 @@ void decisionMaker(tuple<int,int> physTranslation, TLB TLB, pageTable pageTable,
         {
             int firstOccurrence = true;
             TLBVec = updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
+            //TLB content has changed
             TLB = replacePage(TLBVec, pageNumber, pageTable, TLB,backingStore);
+            // update TLBVec, TLBVec is needed to determine which pg was LRU
             TLBVec = updateTally(TLB, pageNumber, TLBVec, firstOccurrence);
         }
         
