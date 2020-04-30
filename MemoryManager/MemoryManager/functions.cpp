@@ -185,19 +185,6 @@ vector<victimPage> updateTally(TLB TLB, int cpu_pg, vector<victimPage> & TLBVec,
 }
 
 
-//version 2 of replace page if pagefault
-void replacePageV2(vector<victimPage> & TLBVec, int pageNumber, pageTable pageTable,  TLB TLB, Application backingStore[]){
-    //if TLB is empty
-    
-    //if pageTable is empty
-    
-    //if TLB is full
-    
-    //if pageTable full
-    
-    
-}
-
 
 //decides if it is matched in TLB, page table or if page faulted.
 //TODO make functional... bulk of alg should be here
@@ -372,16 +359,33 @@ void buildBackingStore(Application backingStore[]){
     }
     BckStrfile.close();
     
-    //convert bin text file to char array
-    ifstream f("backingStore.bin",ios::in | ios::binary);
-    char test[sizeof(f)];
-
-    //gets length of file, saves info to end_pos
-    f.seekg(0, ios_base::end);
-    ios_base::streampos end_pos = f.tellg();
+//    //convert bin text file to char array
+//    ifstream f("backingStore.bin",ios::in | ios::binary);
+//    char test[sizeof(f)];
+//
+//    //gets length of file, saves info to end_pos
+//    f.seekg(0, ios_base::end);
+//    ios_base::streampos end_pos = f.tellg();
 
 
 };
 
 
+//fetches application name from backing store.
+Application fetchFromBkStr(int frame, int offset){
+    Application foundApp;
+    char * buffer[sizeof(Application)];
+    
+    FILE *tempFile;
+    tempFile = fopen("backingStore.bin", "r");
+    fseek(tempFile, (sizeof(Application)* frame), SEEK_SET);
+    Application tempApp;
+    fread(&tempApp, sizeof(Application), 1, tempFile);
+    cout << tempApp.frame << tempApp.appName << endl;
+    
+    foundApp.frame = tempApp.frame;
+    foundApp.appName = tempApp.appName;
+    
+    return foundApp;
+};
 

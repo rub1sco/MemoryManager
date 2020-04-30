@@ -31,11 +31,11 @@ int randomNumberGenerator();
 tuple<int,int> parser(int logicalAddress, int NumPages);
 vector<victimPage> updateTally(unordered_map<int, int> TLB, int cpu_pg, vector<victimPage> & TLBVec, bool firstOccurrence);
 TLB replacePage (vector<victimPage> & TLBVec, int pageNumber, pageTable pageTable,  TLB TLB, Application backingStore[]);
-void replacePageV2(vector<victimPage> & TLBVec, int pageNumber, pageTable pageTable,  TLB TLB, Application backingStore[]);
 void mainMenu();
 void locateRandomAddress(Application backingStore[]);
 void locateKnownAddress(Application backingStore[]);
 void decisionMaker(tuple<int,int> physTranslation, TLB TLB, pageTable pageTable, vector<victimPage> & TLBVec, Application backingStore[]);
 void buildBackingStore(Application backingStore[]);
+Application fetchFromBkStr(int frame, int offset);
 
 #endif /* functions_h */
