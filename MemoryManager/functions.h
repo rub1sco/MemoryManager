@@ -29,12 +29,12 @@ struct Application {
 //definitons of helper functions
 int randomNumberGenerator();
 tuple<int,int> parser(int logicalAddress);
-vector<victimPage> updateTally(unordered_map<int, int> TLB, int cpu_pg, vector<victimPage> & TLBVec, bool firstOccurrence);
-TLB replacePage (vector<victimPage> & TLBVec, int pageNumber, pageTable &pageTable,  TLB &TLB);
+void updateTally(unordered_map<int, int> & TLB, int cpu_pg, vector<victimPage> & TLBVec, bool firstOccurrence);
+void replacePage (vector<victimPage> & TLBVec, int pageNumber, int addressToLocate, pageTable & pageTable,  TLB &TLB);
 void mainMenu();
-void locateRandomAddress();
-void locateKnownAddress();
-void decisionMaker(unordered_map<int, int> &physTranslation, TLB &TLB, pageTable &pageTable, vector<victimPage> & TLBVec);
+void locateRandomAddress(vector<victimPage> & TLBVec, pageTable & pageTable, TLB & TLB);
+void locateKnownAddress(vector<victimPage> & TLBVec, pageTable & pageTable, TLB & TLB);
+void decisionMaker(unordered_map<int, int> &physTranslation, TLB &TLB, pageTable &pageTable, vector<victimPage> & TLBVec, int addressToLocate);
 void decisionMaker(tuple<int,int> physTranslation, TLB &TLB, pageTable &pageTable, vector<victimPage> & TLBVec);
 void buildBackingStore(Application backingStore[]);
 Application fetchFromBkStr(int frame, int offset);
