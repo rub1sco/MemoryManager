@@ -30,7 +30,7 @@ public:
         {return true;}
         if (tally == vpg.tally)
         {return true;}
-        
+
         return false;
     }
     

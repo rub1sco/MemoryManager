@@ -1,14 +1,33 @@
 #include "functions.h"
+#include <algorithm>
+#include "victimPage.h"
 
 
 
 //generates welcome message
 void mainMenu(){
-    cout << "Welcome to our virtual memory manager. What would you like to do?" << endl;
+      cout << "Welcome to our virtual memory manager. What would you like to do?" << endl;
       cout << "A. Locate random logical addresses" << endl;
       cout << "B. Enter known logical address (0-65535)" << endl;
+      cout << "C. Project Demo" << endl;
       cout << "X. exit" << endl;
 }
+
+void demoExample(){
+    
+    //generate random logical address
+    int logicalAddr = randomNumberGenerator();
+    printf("generating address...\n");
+    printf("Logical address generated: %d\n", logicalAddr);
+    
+    //parse into pagenumber and offset
+    tuple<int,int> physTranslation = parser(logicalAddr);
+    printf("parsing data...\nparsed.\npage number: %d, offset: %d\n fetching from backing store... please wait...\n",get<0>(physTranslation), get<1>(physTranslation));
+    
+    //fetch from backing store
+    fetchFromBkStr(get<0>(physTranslation), get<1>(physTranslation));
+}
+
 
 //provides random logical address for lookup
 int randomNumberGenerator(){
@@ -64,7 +83,7 @@ void updateTally(TLB & TLB, int cpu_pg, vector<victimPage> & TLBVec, bool firstO
     
 }
 
-void replacePage (vector<victimPage> & TLBVec, int pageNumber, int addressToLocate, pageTable & pageTable,  TLB & TLB)
+void replacePage (vector<victimPage> & TLBVec, int pageNumber, int addressToLocate, pageTable & pageTable,  TLB & TLB, int LRU_Tracker)
 
 {
     victimPage entry;
@@ -75,6 +94,7 @@ void replacePage (vector<victimPage> & TLBVec, int pageNumber, int addressToLoca
     unordered_map<int, int> TLB_ = TLB.getLookBuffer();
     unordered_map<int, int> pageTable_ = pageTable.getTable();
     int invalidBit = 0;
+  
 
     
     // page fault case one: TLB is not full
@@ -94,9 +114,9 @@ void replacePage (vector<victimPage> & TLBVec, int pageNumber, int addressToLoca
             
             if (mapItP->first == pageNumber)
             {
-                
+              
                 TLB.addValue(pageNumber, pageNumber);
-                entry.setTally(1);
+                entry.setTally(TLBVec.size()+1);
                 entry.setPageNum(pageNumber);
                 entry.setFrameNum(pageNumber);
                 TLBVec.push_back(entry);
@@ -118,7 +138,7 @@ void replacePage (vector<victimPage> & TLBVec, int pageNumber, int addressToLoca
             invalidBit = 1;
             pageTable.addToTable(pageNumber, invalidBit);
             TLB.addValue(pageNumber, pageNumber);
-            entry.setTally(1);
+            entry.setTally(TLBVec.size()+1);
             entry.setPageNum(pageNumber);
             entry.setFrameNum(pageNumber);
             TLBVec.push_back(entry);
@@ -128,16 +148,20 @@ void replacePage (vector<victimPage> & TLBVec, int pageNumber, int addressToLoca
     TLB_ = TLB.getLookBuffer();
     
     // page fault case two: TLB is full, pick a victim page
+    
     if (TLB_.size() == 16 && TLBVec.size() == 16)
     {
         
+        LRU_Tracker ++;
+        
         // sort vec on tally thus slot [0] will contain victim pg
         sort(TLBVec.begin(), TLBVec.end());
-        cout << "page to be removed: " << TLBVec[0].getPageNum() << endl;
+        //cout << "page to be removed: " << TLBVec[0].getPageNum() << endl;
         
         unordered_map<int, int>::iterator mapIt;
         unordered_map<int, int> TLB_ = TLB.getLookBuffer();
         mapIt = TLB_.begin();
+       
         
         // find victim in TLB
         while(mapIt != TLB_.end())
@@ -148,8 +172,6 @@ void replacePage (vector<victimPage> & TLBVec, int pageNumber, int addressToLoca
                 TLB.removeValue(TLBVec[0].getPageNum());
                 // erase TLBVec[0] from TLBVec
                 TLBVec.erase(TLBVec.begin());
-                // for debugging,
-                //cout << "after removing a page from the tlb this is the size of the tlb: " << TLBVec.size()<< endl;
                 break;
             }
             mapIt ++;
@@ -161,6 +183,11 @@ void replacePage (vector<victimPage> & TLBVec, int pageNumber, int addressToLoca
         
         auto temp = parser(addressToLocate);
         addressToLocate = get<0>(temp);
+        int offset = get<1>(temp);
+        //Application test;
+        //test = fetchFromBkStr(temp, offset);
+        
+        
         
         //find pg requested in pg table / disk
         while(mapItP != pageTable_.end())
@@ -168,11 +195,11 @@ void replacePage (vector<victimPage> & TLBVec, int pageNumber, int addressToLoca
 
             if (mapItP->first == addressToLocate)
             {
-                cout << "desired page to be added: " << addressToLocate << endl;
+                //cout << "desired page to be added: " << addressToLocate << endl;
                 TLB.addValue(addressToLocate, addressToLocate);
-                entry.setTally(1);
-                entry.setPageNum(mapItP->first);
-                entry.setFrameNum(mapItP->first);
+                entry.setTally(LRU_Tracker);
+                entry.setPageNum(addressToLocate);
+                entry.setFrameNum(addressToLocate);
                 TLBVec.push_back(entry);
                 bIsInPageTable = true;
                 break;
@@ -183,15 +210,14 @@ void replacePage (vector<victimPage> & TLBVec, int pageNumber, int addressToLoca
             mapItP ++;
         }
         
-        
         // page was not found in page table
         if (bIsInPageTable == false)
         {
             invalidBit = 1;
             pageTable.addToTable(addressToLocate, invalidBit);
-            cout << "desired page to be added: " << addressToLocate << endl;
+            //cout << "desired page to be added: " << addressToLocate << endl;
             TLB.addValue(addressToLocate, addressToLocate);
-            entry.setTally(1);
+            entry.setTally(LRU_Tracker);
             entry.setPageNum(addressToLocate);
             entry.setFrameNum(addressToLocate);
             TLBVec.push_back(entry);
@@ -205,6 +231,7 @@ void replacePage (vector<victimPage> & TLBVec, int pageNumber, int addressToLoca
 //decides if it is matched in TLB, page table or if page faulted.
 void decisionMaker(unordered_map<int, int> &physTranslation, TLB &TLB, pageTable &pageTable, vector<victimPage> & TLBVec, int addressToLocate){
     
+    int LRU_Tracker = 16;
     int pageNumber = 0;
     int offset = 0;
     
@@ -242,17 +269,17 @@ void decisionMaker(unordered_map<int, int> &physTranslation, TLB &TLB, pageTable
                 //returns frame number
 
                 //use frame and offset to find in physical memory
-                replacePage (TLBVec, pageNumber, addressToLocate, pageTable, TLB);
+                replacePage (TLBVec, pageNumber, addressToLocate, pageTable, TLB, LRU_Tracker);
             }
             //else, page fault
             if (pageTable.bisInTable(pageNumber)== false)
             {
-                replacePage (TLBVec, pageNumber, addressToLocate, pageTable, TLB);
+                replacePage (TLBVec, pageNumber, addressToLocate, pageTable, TLB, LRU_Tracker );
                 
             }
-        cout << "at the end of decision maker " <<TLBVec.size() << endl;
+        //cout << "at the end of decision maker " <<TLBVec.size() << endl;
     }
-    cout << "end of decisionMaker loop: " <<endl;
+    //cout << "end of decisionMaker loop: " <<endl;
         
 }
 
@@ -261,6 +288,7 @@ void decisionMaker(unordered_map<int, int> &physTranslation, TLB &TLB, pageTable
 void decisionMaker(tuple<int,int> physTranslation, TLB &TLB, pageTable &pageTable, vector<victimPage> & TLBVec){
     int pageNumber = get<0>(physTranslation);
     int offset = get<1>(physTranslation);
+    int LRU_Tracker = 16;
     
    if(TLB.bIsInBuffer(pageNumber) == true){
             /* do stuff with data here*/
@@ -290,15 +318,15 @@ void decisionMaker(tuple<int,int> physTranslation, TLB &TLB, pageTable &pageTabl
             //returns frame number
             
             //use frame and offset to find in physical memory
-             replacePage (TLBVec, pageNumber, pageNumber, pageTable, TLB);
+             replacePage (TLBVec, pageNumber, pageNumber, pageTable, TLB, LRU_Tracker);
         }
         //else, page fault
         else if (pageTable.bisInTable(pageNumber)== false)
         {
-            replacePage (TLBVec, pageNumber, pageNumber, pageTable, TLB);
+            replacePage (TLBVec, pageNumber, pageNumber, pageTable, TLB, LRU_Tracker);
             
         }
-    cout << "at the end of decision maker the TLBVec size is: " <<TLBVec.size() << endl;
+   // cout << "at the end of decision maker the TLBVec size is: " <<TLBVec.size() << endl;
         
 }
     
@@ -433,7 +461,8 @@ Application fetchFromBkStr(int frame, int offset){
     fseek(tempFile, (sizeof(Application)* frame), SEEK_SET);
     Application tempApp;
     fread(&tempApp, sizeof(Application), 1, tempFile);
-    cout << tempApp.frame << tempApp.appName << endl;
+    //cout << tempApp.frame << tempApp.appName << endl;
+    printf("physical frame number: %d, stored application: %s\n\n", tempApp.frame, tempApp.appName.c_str());
     
     foundApp.frame = tempApp.frame;
     foundApp.appName = tempApp.appName;
