@@ -10,6 +10,7 @@ int main(int argc, const char * argv[]) {
     vector<victimPage> TLBVec;
     TLB TLB;
     pageTable pageTable;
+    int LRU_Tracker = 0;
     //populate backingStore with data
     buildBackingStore(backingStore);
     
@@ -43,7 +44,7 @@ int main(int argc, const char * argv[]) {
                 
             case 'b':
             case 'B':
-                locateKnownAddress(TLBVec, pageTable, TLB);
+                locateKnownAddress(TLBVec, pageTable, TLB, LRU_Tracker);
                 break;
                 
                 /* should we add any other options like modifying page sizes or anything???*/
